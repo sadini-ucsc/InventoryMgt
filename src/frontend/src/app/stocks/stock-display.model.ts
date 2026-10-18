@@ -5,6 +5,7 @@ export interface StockDisplayModel {
   productName: string;
   productId: number;
   quantity: number;
+  lowStock: boolean; // calculated by the backend (quantity <= 5)
   id: number;
   createDate: string;
   updateDate: string;

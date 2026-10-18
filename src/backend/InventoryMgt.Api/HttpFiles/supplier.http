@@ -2,6 +2,9 @@
 
 GET {{base_address}}
 
+### EXPORT CSV (all matching suppliers, honours search and sort)
+GET {{base_address}}/export?searchTerm=sup&sortColumn=supplierName&sortDirection=asc
+
 ### GET one
 GET {{base_address}}/4
 

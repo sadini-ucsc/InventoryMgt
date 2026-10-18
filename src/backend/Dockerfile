@@ -6,7 +6,8 @@ COPY *.sln .
 COPY InventoryMgt.Api/*.csproj ./InventoryMgt.Api/
 COPY InventoryMgt.Data/*.csproj ./InventoryMgt.Data/
 COPY InventoryMgt.Shared/*.csproj ./InventoryMgt.Shared/
-RUN dotnet restore
+# restore only the API (and its references); the test project is in the .sln but not copied into the image
+RUN dotnet restore InventoryMgt.Api/InventoryMgt.Api.csproj
 
 # copy everything else and build app
 COPY InventoryMgt.Api/. ./InventoryMgt.Api/

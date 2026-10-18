@@ -12,6 +12,7 @@ public static class ServiceRegistratonExtension
         services.AddTransient<ExceptionMiddleware>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IPdfService, PdfService>();
+        services.AddTransient<ICsvService, CsvService>();
         services.AddCors(options =>
         {
             options.AddDefaultPolicy(policy =>

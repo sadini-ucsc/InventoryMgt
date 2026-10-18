@@ -2,6 +2,7 @@ using System.Text.Json;
 using InventoryMgt.Shared.CustomExceptions;
 using InventoryMgt.Shared.DTOs;
 using InventoryMgt.Shared.Repositories;
+using InventoryMgt.Shared.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,15 @@ namespace InventoryMgt.Api.Controllers;
 public class SupplierController : ControllerBase
 {
     private readonly ISupplierRepository _supplierRepo;
+    private readonly ICsvService _csvService;
 
-    public SupplierController(ISupplierRepository supplierRepo)
+    // GetSuppliersAsnc caps limit at 100, so the export fetches page by page
+    private const int ExportPageSize = 100;
+
+    public SupplierController(ISupplierRepository supplierRepo, ICsvService csvService)
     {
         _supplierRepo = supplierRepo;
+        _csvService = csvService;
     }
 
     [HttpPost]
@@ -80,5 +86,24 @@ public class SupplierController : ControllerBase
 
         Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationHeader));
         return Ok(suppliers);
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> ExportSuppliers(string? searchTerm = null, string? sortColumn = null, string? sortDirection = null)
+    {
+        // Export all matching suppliers (no pagination), honouring the current search and sort
+        var suppliers = new List<SupplierReadDto>();
+        var page = 1;
+        PagedSupplier result;
+        do
+        {
+            result = await _supplierRepo.GetSuppliersAsnc(page, ExportPageSize, searchTerm, sortColumn, sortDirection);
+            suppliers.AddRange(result.Suppliers);
+            page++;
+        } while (page <= result.TotalPages);
+
+        var csvBytes = _csvService.GenerateSupplierCsv(suppliers);
+        var fileName = $"Suppliers_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+        return File(csvBytes, "text/csv", fileName);
     }
 }

@@ -1,5 +1,6 @@
 @base_address = http://localhost:5131/api/stocks
 
 # get all
+# each item includes "lowStock": true when quantity <= 5
 GET {{base_address}}
 

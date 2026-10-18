@@ -8,11 +8,29 @@ import {
 import { MatTableModule } from "@angular/material/table";
 import { StockDisplayModel } from "../stock-display.model";
 import { MatSortModule, Sort, SortDirection } from "@angular/material/sort";
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
     selector: "app-stock-list",
-    imports: [MatTableModule, MatSortModule],
-    styles: [``],
+    imports: [MatTableModule, MatSortModule, MatIconModule],
+    styles: [`
+      .low-stock-row {
+        background-color: #fff4e5;
+      }
+      .low-stock-warning {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 12px;
+        color: #b45309;
+        font-weight: 500;
+      }
+      .low-stock-warning mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    `],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
     <table
@@ -48,11 +66,23 @@ import { MatSortModule, Sort, SortDirection } from "@angular/material/sort";
 
       <ng-container matColumnDef="quantity">
         <th mat-header-cell *matHeaderCellDef>Quantity</th>
-        <td mat-cell *matCellDef="let item">{{ item.quantity }}</td>
+        <td mat-cell *matCellDef="let item">
+          {{ item.quantity }}
+          @if(item.lowStock){
+          <span class="low-stock-warning">
+            <mat-icon aria-hidden="true">warning</mat-icon>
+            Low stock
+          </span>
+          }
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        [class.low-stock-row]="row.lowStock"
+      ></tr>
     </table>
   `
 })

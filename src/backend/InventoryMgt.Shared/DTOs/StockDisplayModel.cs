@@ -1,6 +1,6 @@
 namespace InventoryMgt.Shared.DTOs;
 
-using InventoryMgt.Shared.DTOs;
+using InventoryMgt.Shared.Constants;
 
 public class StockDisplayModel
 {
@@ -10,6 +10,8 @@ public class StockDisplayModel
     public string CategoryName { get; set; } = string.Empty;
     public string ProductName { get; set; } = string.Empty;
     public string Sku { get; set; } = string.Empty;
+    // computed from Quantity, not stored in the database
+    public bool LowStock => Quantity <= StockThresholds.LowStock;
 }
 
 public class PaginatedStock
